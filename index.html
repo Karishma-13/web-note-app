@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web note app</title>
+
+    <style>
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+      
+        .header-container{
+            display: flex;
+            height: 500px;
+            width: 800px;
+            border: 2px solid rgb(56, 55, 55);
+            margin: auto;
+            margin-top: 50px;
+            box-shadow: 15px 15px rgb(29, 29, 29);
+        }
+
+        .form{
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            align-items: center;
+            background-color: rgb(157, 179, 147);
+        }
+
+        .form h2{
+            font-size: 3rem;
+            margin: 10px;
+        }
+
+        .box{
+            padding: 8px;
+            width: 65%;
+            outline: none;
+            border: 2px solid rgb(5, 5, 5);
+            border-radius: 23px;
+        }
+
+        #submit{
+            padding: 10px 15px;
+            width: 30%;
+            margin-top: 10px;
+            background-color: black;
+            color: white;
+            font-weight: bold;
+            border-radius: 23px;   
+        }
+
+        #submit:hover{
+            cursor: pointer;
+            background-color: crimson;
+        }
+
+        .form p{
+            color: black;
+            margin-top: 17px;
+        }
+
+        .side{
+            display: flex;
+            justify-content: center;
+            align-items: center;  
+        }
+
+        .side img{
+            height: 350px;
+            width: 350px;
+        }
+        
+        .footer-container{
+            margin-top: 70px;
+            margin-bottom: 300px;
+        }
+
+        .footer-container h2{
+            font-size: 3rem;
+            margin: 10px;
+        }
+
+        #notes{
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .note-counter{
+            margin-top: 18px;
+            margin-bottom: 16px;
+            border: 2px solid rgb(45, 61, 45);
+            width: 70px;
+            background-color: rgb(157, 179, 147);
+        }
+
+        .note .title{
+            margin-bottom: 5px;
+            font-weight: 900;
+            font-size: larger;
+            color: rgb(10, 10, 10);
+        }
+
+        .note .descp{
+            margin-bottom: 5px;
+        }
+
+        .note-box{
+            margin-top: 18px;
+            margin-bottom: 16px;
+            border: 2px solid rgb(45, 61, 45);
+            width: 500px;
+        }
+
+        .note-btn{
+            margin-right: 30px;
+            background-color: rgb(194, 41, 41);
+            color: white;
+            padding: 3px;
+        }
+
+        .edit-btn{
+            background-color: rgb(21, 165, 69);
+            padding: 3px;
+        }
+
+        .note-btn:hover{
+            
+        }
+
+       
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <form class="form">
+            <h2>Notes</h2><br>
+            <h3>Title</h3><input type="text" id="title" class="box" name="title" placeholder="Enter the title" ><br>
+            <h3>Description</h3><textarea name="descp" id="descp" class="box" cols="30" rows="10" placeholder="Start writing notes..."></textarea><br>
+            <button id="submit">Add Notes</button>
+        </form>
+     
+        <div class="side">
+            <img src="images/eco-ge514822b7_640.png" alt="">
+        </div>
+     </div>
+</header>
+
+
+<section>
+    <div class="footer-container">
+        <h2>Your Notes</h2>
+        <hr>
+        <div id="notes">
+    
+                <div class="note">
+                    <h3 class="note-counter"> Note ${index + 1} </h3>
+                    <div class="note-box">
+                        <p class="title"> $element.title </p>
+                        <p class="descp"> $element.text</p>
+                        <button class="note-btn">Delete Note</button>
+                        <button class="note-btn edit-btn">Edit Note</button>
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+</section>
+
+
+<script>
+
+
+    // Add note to local storage
+    let addBtn = document.getElementById("submit");
+    addBtn.addEventListener("click", function(e) {
+    
+      let addTitle = document.getElementById("title");
+      let addTxt = document.getElementById("descp");
+      
+        if (addTitle.value == "" || addTxt.value == "") {
+            return alert("Please add Note Title and Details")
+        }
+    
+      let notes = localStorage.getItem("notes");
+      if (notes == null) {
+        notesObj = [];
+      } else {
+        notesObj = JSON.parse(notes);
+      }
+      let myObj = {
+        title: addTitle.value,
+        text: addTxt.value
+      }
+      notesObj.push(myObj);
+      localStorage.setItem("notes", JSON.stringify(notesObj));
+      addTxt.value = "";
+      addTitle.value = "";
+  
+      showNotes();
+    });
+    
+    // Function to show elements from localStorage
+    function showNotes() {
+      let notes = localStorage.getItem("notes");
+      if (notes == null) {
+        notesObj = [];
+      } else {
+        notesObj = JSON.parse(notes);
+      }
+      let html = "";
+      notesObj.forEach(function(element, index) {
+        html += `
+            <div class="note">
+                <h3 class="note-counter">Note ${index + 1}</h3>
+                <div class="note-box">
+                <p class="title"> ${element.title} </p>
+                <p class="descp"> ${element.text}</p>
+                <button id="${index}"onclick="deleteNote(this.id)" class="note-btn">Delete Note</button>
+                <button id="${index}"onclick="editNote(this.id)" class="note-btn edit-btn">Edit Note</button>
+                </div>
+            </div>
+                `;
+      });
+      let notesElm = document.getElementById("notes");
+      if (notesObj.length != 0) {
+        notesElm.innerHTML = html;
+      } else {
+        notesElm.innerHTML = "Nothing is written inside, please enter some text.";
+      }
+    }
+    
+    // Function to delete a note
+    function deleteNote(index) {
+  
+        let confirmDel = confirm("Delete this note?");
+        if (confirmDel == true) {
+            let notes = localStorage.getItem("notes");
+            if (notes == null) {
+                notesObj = [];
+            } else {
+                notesObj = JSON.parse(notes);
+            }
+    
+            notesObj.splice(index, 1);
+            localStorage.setItem("notes", JSON.stringify(notesObj));
+            showNotes();
+        }
+      
+    }
+    
+    // Function to Edit the Note
+    function editNote(index) {
+        let notes = localStorage.getItem("notes");
+        let addTitle = document.getElementById("title");
+        let addTxt = document.getElementById("descp");
+    
+        if (addTitle.value !== "" || addTxt.value !== "") {
+          return alert("Please clear the form before editing a note")
+        } 
+    
+        if (notes == null) {
+          notesObj = [];
+        } else {
+          notesObj = JSON.parse(notes);
+        }
+        console.log(notesObj);
+    
+        notesObj.findIndex((element, index) => {
+          addTitle.value = element.title;
+          addTxt.value = element.text;
+        })
+        notesObj.splice(index, 1);
+            localStorage.setItem("notes", JSON.stringify(notesObj));
+            showNotes();
+    }
+    
+    
+    showNotes();
+       </script>
+
+</body>
+</html>
